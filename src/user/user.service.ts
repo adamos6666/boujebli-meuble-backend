@@ -1,6 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+
+type User = {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+};
 
 const prisma = new PrismaClient();
 

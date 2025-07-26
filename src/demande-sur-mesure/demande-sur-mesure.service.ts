@@ -1,5 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient, DemandeSurMesure } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+
+type DemandeSurMesure = {
+  id: number;
+  nom: string;
+  dimensions: string;
+  image: string | null;
+  clientId: number;
+};
 import { CreateDemandeSurMesureDto } from './dto/create-demande-sur-mesure.dto';
 import { UpdateDemandeSurMesureDto } from './dto/update-demande-sur-mesure.dto';
 

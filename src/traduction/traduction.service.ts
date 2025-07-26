@@ -1,5 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient, Traduction } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+
+type Traduction = {
+  id: number;
+  cle: string;
+  valeur: string;
+  langue: string;
+};
 import { CreateTraductionDto } from './dto/create-traduction.dto';
 import { UpdateTraductionDto } from './dto/update-traduction.dto';
 
