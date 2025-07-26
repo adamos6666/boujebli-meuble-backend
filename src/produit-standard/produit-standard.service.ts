@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient, ProduitStandard } from '../../generated/prisma';
+import { PrismaClient, ProduitStandard } from '@prisma/client';
 import { CreateProduitStandardDto } from './dto/create-produit-standard.dto';
 import { UpdateProduitStandardDto } from './dto/update-produit-standard.dto';
 
