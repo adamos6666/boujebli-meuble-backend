@@ -3,6 +3,16 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+// Interface pour le type de requête avec utilisateur
+interface RequestWithUser extends Request {
+  user: {
+    sub: number;
+    email: string;
+    name: string;
+    role: string;
+  };
+}
+
 @ApiTags('user')
 @Controller('user')
 export class UserController {
@@ -29,7 +39,7 @@ export class UserController {
   @ApiOperation({ summary: 'Récupérer le profil de l\'utilisateur connecté' })
   @ApiResponse({ status: 200, description: 'Profil utilisateur' })
   @ApiResponse({ status: 401, description: 'Non autorisé' })
-  async getProfile(@Request() req) {
+  async getProfile(@Request() req: RequestWithUser) {
     const userId = req.user.sub;
     const user = await this.userService.findOne(userId);
     
