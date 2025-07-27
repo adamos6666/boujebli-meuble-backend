@@ -20,21 +20,44 @@ export class ProduitStandardService {
   }
 
   async findAll(langue?: string): Promise<ProduitStandard[]> {
-    const where = langue ? {
-      langues: {
-        has: langue
-      }
-    } : {};
-    
-    return prisma.produitStandard.findMany({ where });
+    try {
+      const where = langue ? {
+        langues: {
+          has: langue
+        }
+      } : {};
+      
+      const produits = await prisma.produitStandard.findMany({ where });
+      console.log(`✅ ${produits.length} produits trouvés${langue ? ` pour la langue ${langue}` : ''}`);
+      return produits;
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération des produits:', error);
+      throw new Error('Erreur de base de données lors de la récupération des produits');
+    }
   }
 
   async findOne(id: number): Promise<ProduitStandard> {
-    const produit = await prisma.produitStandard.findUnique({ where: { id } });
-    if (!produit) {
-      throw new NotFoundException(`Produit standard avec l'ID ${id} non trouvé`);
+    console.log(`🔍 Service: Recherche du produit avec l'ID: ${id}`);
+    
+    if (!id || isNaN(id) || id <= 0) {
+      throw new Error(`ID invalide dans le service: ${id}`);
     }
-    return produit;
+    
+    try {
+      const produit = await prisma.produitStandard.findUnique({ 
+        where: { id: Number(id) } 
+      });
+      
+      if (!produit) {
+        throw new NotFoundException(`Produit standard avec l'ID ${id} non trouvé`);
+      }
+      
+      console.log(`✅ Produit trouvé: ${produit.titre}`);
+      return produit;
+    } catch (error) {
+      console.error(`❌ Erreur lors de la recherche du produit ${id}:`, error);
+      throw error;
+    }
   }
 
   async update(id: number, data: UpdateProduitStandardDto): Promise<ProduitStandard> {
