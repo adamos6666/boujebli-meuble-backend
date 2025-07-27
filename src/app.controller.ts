@@ -1,20 +1,72 @@
 import { Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('health')
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @ApiOperation({ summary: 'Endpoint de santé de l\'API' })
+  @ApiResponse({ status: 200, description: 'API fonctionnelle' })
+  getHello(): object {
+    return {
+      message: 'Boujebli Meuble API',
+      version: '1.0.0',
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+    };
   }
 
   @Get('health')
-  getHealth(): { status: string; timestamp: string } {
+  @ApiOperation({ summary: 'Vérification de santé détaillée' })
+  @ApiResponse({ status: 200, description: 'Statut détaillé de l\'API' })
+  getHealth(): object {
     return {
-      status: 'OK',
+      status: 'ok',
       timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory: {
+        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+        external: Math.round(process.memoryUsage().external / 1024 / 1024),
+      },
+      environment: process.env.NODE_ENV || 'development',
+      nodeVersion: process.version,
+      platform: process.platform,
+    };
+  }
+
+  @Get('info')
+  @ApiOperation({ summary: 'Informations sur l\'API' })
+  @ApiResponse({ status: 200, description: 'Informations détaillées' })
+  getInfo(): object {
+    return {
+      name: 'Boujebli Meuble API',
+      description: 'API pour la gestion des meubles sur mesure',
+      version: '1.0.0',
+      author: 'Boujebli Meuble',
+      endpoints: {
+        auth: '/auth',
+        products: '/produit-standard',
+        translations: '/traduction',
+        demands: '/demande-sur-mesure',
+        users: '/user',
+        swagger: '/api',
+      },
+      features: [
+        'Authentification JWT',
+        'Gestion des produits',
+        'Système de traductions',
+        'Demandes sur mesure',
+        'Documentation Swagger',
+        'Validation des données',
+        'CORS configuré',
+      ],
     };
   }
 
