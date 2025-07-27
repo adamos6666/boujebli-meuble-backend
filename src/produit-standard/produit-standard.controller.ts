@@ -45,6 +45,28 @@ export class ProduitStandardController {
     }
   }
 
+  @Get('debug/all')
+  @ApiOperation({ summary: 'Debug - Récupérer tous les produits sans wrapper' })
+  async debugAll() {
+    try {
+      console.log('🔍 Debug - Récupération de tous les produits...');
+      const produits = await this.produitStandardService.findAll();
+      console.log(`✅ Debug - ${produits.length} produits trouvés`);
+      console.log('✅ Debug - Titres:', produits.map(p => p.titre));
+      return {
+        count: produits.length,
+        produits: produits,
+        message: 'Debug - Produits récupérés directement'
+      };
+    } catch (error) {
+      console.error('❌ Debug - Erreur:', error);
+      return {
+        error: error.message,
+        message: 'Debug - Erreur lors de la récupération'
+      };
+    }
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Récupérer un produit standard par ID' })
   @ApiResponse({ status: 200, description: 'Produit standard trouvé' })
