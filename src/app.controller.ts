@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -16,6 +16,37 @@ export class AppController {
       status: 'OK',
       timestamp: new Date().toISOString(),
     };
+  }
+
+  @Post('seed')
+  async runSeed() {
+    try {
+      console.log('🌱 Démarrage du seed manuel...');
+      
+      // Importer et exécuter le seed
+      const { execSync } = require('child_process');
+      const result = execSync('npx ts-node seed.ts', { 
+        encoding: 'utf8',
+        cwd: process.cwd()
+      });
+      
+      console.log('✅ Seed exécuté avec succès:', result);
+      
+      return {
+        success: true,
+        message: 'Seed exécuté avec succès',
+        output: result,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Erreur lors du seed:', error);
+      return {
+        success: false,
+        message: 'Erreur lors du seed',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      };
+    }
   }
 
   @Get('test')
