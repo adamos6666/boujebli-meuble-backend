@@ -14,11 +14,12 @@ async function bootstrap() {
       'http://127.0.0.1:3000', 
       'http://127.0.0.1:3001',
       'https://boujebli-meuble.vercel.app',
-      'https://boujebli-meuble-frontend.vercel.app'
+      'https://boujebli-meuble-frontend.vercel.app',
+      'https://boujebli-meuble.vercel.app'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
   // Validation globale
