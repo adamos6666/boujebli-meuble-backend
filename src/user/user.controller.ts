@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, Request, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -39,13 +39,33 @@ export class UserController {
   @ApiOperation({ summary: 'Récupérer le profil de l\'utilisateur connecté' })
   @ApiResponse({ status: 200, description: 'Profil utilisateur' })
   @ApiResponse({ status: 401, description: 'Non autorisé' })
+  @ApiResponse({ status: 404, description: 'Utilisateur non trouvé' })
   async getProfile(@Request() req: RequestWithUser) {
-    const userId = req.user.sub;
-    const user = await this.userService.findOne(userId);
-    
-    // Retourner les informations sans le mot de passe
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    try {
+      const userId = req.user.sub;
+      console.log('🔍 Tentative de récupération du profil pour l\'utilisateur ID:', userId);
+      
+      const user = await this.userService.findOne(userId);
+      
+      // Retourner les informations sans le mot de passe
+      const { password, ...userWithoutPassword } = user;
+      console.log('✅ Profil utilisateur récupéré avec succès:', { id: user.id, email: user.email });
+      return userWithoutPassword;
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération du profil:', error);
+      if (error.message === 'Utilisateur non trouvé') {
+        throw new HttpException({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Utilisateur non trouvé',
+          error: 'Not Found'
+        }, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Erreur interne du serveur',
+        error: 'Internal Server Error'
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Post()
