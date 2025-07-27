@@ -19,7 +19,7 @@ export class ProduitStandardController {
       console.log(`🔍 Recherche de produits${langue ? ` pour la langue: ${langue}` : ''}`);
       const produits = await this.produitStandardService.findAll(langue);
       console.log(`✅ ${produits.length} produits retournés`);
-      return produits;
+      return produits; // Retourner directement le tableau
     } catch (error) {
       console.error('❌ Erreur dans le contrôleur produit-standard:', error);
       throw error;

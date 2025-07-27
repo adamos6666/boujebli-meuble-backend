@@ -27,7 +27,10 @@ export class ProduitStandardService {
         }
       } : {};
       
-      const produits = await prisma.produitStandard.findMany({ where });
+      const produits = await prisma.produitStandard.findMany({ 
+        where,
+        take: 100 // Limite élevée pour récupérer tous les produits
+      });
       console.log(`✅ ${produits.length} produits trouvés${langue ? ` pour la langue ${langue}` : ''}`);
       return produits;
     } catch (error) {
