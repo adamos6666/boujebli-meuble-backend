@@ -78,4 +78,93 @@ export class UserService {
       return null;
     }
   }
+
+  // Méthodes manquantes ajoutées
+  async findAll(): Promise<User[]> {
+    console.log('🔍 Récupération de tous les utilisateurs');
+    
+    try {
+      const users = await prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          // Exclure le mot de passe pour la sécurité
+        }
+      });
+      
+      console.log(`✅ ${users.length} utilisateurs trouvés`);
+      return users as User[];
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération des utilisateurs:', error);
+      throw error;
+    }
+  }
+
+  async findOne(id: number): Promise<User> {
+    console.log('🔍 Recherche d\'utilisateur par ID:', id);
+    
+    try {
+      const user = await prisma.user.findUnique({ 
+        where: { id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          password: true,
+          role: true,
+        }
+      });
+      
+      if (!user) {
+        console.log('❌ Utilisateur non trouvé:', id);
+        throw new Error('Utilisateur non trouvé');
+      }
+      
+      console.log('✅ Utilisateur trouvé:', { id: user.id, email: user.email });
+      return user as User;
+    } catch (error) {
+      console.error('❌ Erreur lors de la recherche d\'utilisateur:', error);
+      throw error;
+    }
+  }
+
+  async update(id: number, updateUserDto: Partial<User>): Promise<User> {
+    console.log('🔄 Mise à jour d\'utilisateur:', id);
+    
+    try {
+      // Si le mot de passe est fourni, le hasher
+      if (updateUserDto.password) {
+        updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+      }
+      
+      const user = await prisma.user.update({
+        where: { id },
+        data: updateUserDto,
+      });
+      
+      console.log('✅ Utilisateur mis à jour:', { id: user.id, email: user.email });
+      return user;
+    } catch (error) {
+      console.error('❌ Erreur lors de la mise à jour de l\'utilisateur:', error);
+      throw error;
+    }
+  }
+
+  async remove(id: number): Promise<User> {
+    console.log('🗑️ Suppression d\'utilisateur:', id);
+    
+    try {
+      const user = await prisma.user.delete({
+        where: { id },
+      });
+      
+      console.log('✅ Utilisateur supprimé:', { id: user.id, email: user.email });
+      return user;
+    } catch (error) {
+      console.error('❌ Erreur lors de la suppression de l\'utilisateur:', error);
+      throw error;
+    }
+  }
 }
